@@ -14,7 +14,7 @@ DecorationHelper* TO_HELPER(HDECOR handle) {
 RECONSTRUCTION_ERROR_CODE s_ReconstructionErrorCode;
 
 static std::string all_rulers_json; // param.json
-//static std::string g_DistriceSet_path = ""; // cut.json ◊™“∆”√≤ªµΩ
+//static std::string g_DistriceSet_path = ""; // cut.json ËΩ¨ÁßªÁî®‰∏çÂà∞
 static std::string g_mesh_ceiling_path = ""; 
 static std::string g_mesh_opening_path = "";
 static std::string g_update_json_path = "";
@@ -59,7 +59,7 @@ DLL_API void MarkerBallDetectionAndSaveCenter(HDECOR handle, std::string sense_p
 	TO_HELPER(handle)->MarkerBallDetection(sense_path, output_path);
 }
 
-// ø…“‘…Ë÷√∏ﬂ∂»
+// ÂèØ‰ª•ËÆæÁΩÆÈ´òÂ∫¶
 DLL_API bool StructureReconstruction(HDECOR handle, float fake_ceiling_z)
 {
 	return TO_HELPER(handle)->StructureReconstruction(fake_ceiling_z);
@@ -122,15 +122,15 @@ DLL_API int GetErrorCode()
 
 DLL_API bool PlaneSegmentation(HDECOR handle, std::string multi_json_file, std::vector<unsigned long long> station_ids,bool generate_contour)
 {
-	// º”‘ÿserverinfoµ„‘∆ ˝æ›
+	// Âä†ËΩΩserverinfoÁÇπ‰∫ëÊï∞ÊçÆ
 	DWORD start_prepare = GetTickCount();
 	StageMatrix *pstateMatrix = new StageMatrix();
 	pstateMatrix->LoadStationInfo(multi_json_file);
 
 	std::map<int, StationInfo> stationInfo;
 
-	stationInfo = std::move(pstateMatrix->GetStationInfos()); // “∆∂Ø”Ô“Âππ‘Ï’æµ„–≈œ¢
-	float mergeDataDir = std::move(pstateMatrix->GetmergeDataDir()); // ∑øº‰≥ØœÚΩ«∂»
+	stationInfo = std::move(pstateMatrix->GetStationInfos()); // ÁßªÂä®ËØ≠‰πâÊûÑÈÄ†Á´ôÁÇπ‰ø°ÊÅØ
+	float mergeDataDir = std::move(pstateMatrix->GetmergeDataDir()); // ÊàøÈó¥ÊúùÂêëËßíÂ∫¶
 
 	std::vector<std::vector<float>> station_pos;
 
@@ -147,7 +147,7 @@ DLL_API bool PlaneSegmentation(HDECOR handle, std::string multi_json_file, std::
 	log_info("station size = %zu", station_ids.size());
 	//std::cout << "station size = " << station_ids.size() << std::endl;
 
-	// Ωµ≤…—˘ICO«Ú√ÊÕ∂”∞
+	// ÈôçÈááÊ†∑ICOÁêÉÈù¢ÊäïÂΩ±
 	const long long FILE_SIZE_THRESHOLD = 100LL * 1024 * 1024;
 
 	for (int i = 0; i < station_ids.size(); i++)
@@ -205,7 +205,7 @@ DLL_API bool PlaneSegmentation(HDECOR handle, std::string multi_json_file, std::
 	DWORD end_prepare = GetTickCount();
 	std::cout << "prepare time = " << end_prepare - start_prepare << "ms." << "\n";
 
-	// ∆Ω√Ê∑÷∏Ó
+	// Âπ≥Èù¢ÂàÜÂâ≤
 	return TO_HELPER(handle)->PlaneSegmentation(compute_files, RTs, pstateMatrix->GetRefMatrix(), station_pos, mergeDataDir, "", dire, generate_contour);
 }
 
@@ -237,6 +237,9 @@ DLL_API void SetAllRulersJson(std::string rulerJsonString)
 		g_ds_mode = json_integer_value(json_object_get(rulerJson, "ds_model"));
 	if (json_object_get(rulerJson, "square_mode"))
 		g_square_mode = json_integer_value(json_object_get(rulerJson, "square_mode"));
+	if (g_square_mode == 2 || g_square_mode == 3) {
+		log_info("legacy square_mode=%d detected, mapped to strategy_mode=%d", g_square_mode, GetSquareStrategyMode());
+	}
 	if (json_object_get(rulerJson, "square_by_axis"))
 		g_square_by_axis = json_integer_value(json_object_get(rulerJson, "square_by_axis"));
 
@@ -289,7 +292,8 @@ DLL_API void SetAllRulersJson(std::string rulerJsonString)
 	log_info("g_server_info_path: %s", g_server_info_path.c_str());
 	log_info("g_seg_mode: %d", g_seg_mode);
 	log_info("g_ds_mode: %d", g_ds_mode);
-	log_info("g_square_mode: %d", g_square_mode);
+	log_info("g_square_mode(raw): %d", g_square_mode);
+	log_info("g_square_strategy_mode(mapped): %d", GetSquareStrategyMode());
 	log_info("g_square_by_axis: %d", g_square_by_axis);
 	log_info("g_customize_square: %d", g_customize_square);
 	log_info("g_square_height: %d", g_square_height);
@@ -383,6 +387,24 @@ int GetDsMode()
 int GetSquareMode()
 {
 	return g_square_mode;
+}
+
+int GetSquareStrategyMode()
+{
+	// New 2-mode mapping with backward compatibility
+	// 0: regularized square
+	// 1: fit-max-area square
+	// legacy 2(convexity) -> regularized
+	// legacy 3(min-loss) -> fit-max-area
+	if (g_square_mode == 1 || g_square_mode == 3) {
+		return SQUARE_STRATEGY_FIT_MAX_AREA;
+	}
+	return SQUARE_STRATEGY_REGULARIZED;
+}
+
+bool IsRegularizedSquareMode()
+{
+	return GetSquareStrategyMode() == SQUARE_STRATEGY_REGULARIZED;
 }
 bool IsSquareByAxis()
 {
