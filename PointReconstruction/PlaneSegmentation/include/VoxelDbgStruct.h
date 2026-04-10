@@ -1,0 +1,22 @@
+#ifndef VOXEL_DEBUG_STRUCT_H
+#define VOXEL_DEBUG_STRUCT_H
+//suggested opencv version: 3.4.1
+
+#include "config.h"
+#include "DataStruct.h"
+
+enum VoxelNeighborDebugType
+{
+	ALL_VOXEL_DEBUG = 0,
+	GOOD_VOXEL_DEBUG = 1,
+	PSEUDOBAD_VOXEL_DEBUG = 2,
+	BAD_VOXEL_DEBUG = 3,
+	UNMERGED_PSEUDOBAD_VOXEL_DEBUG = 4,
+	UNMERGED_BAD_VOXEL_DEBUG = 5,
+	//BRIDGE_VOXEL_DEBUG = 6,
+	NON_OVERALL_MERGED_VOXEL_DEBUG = 7
+};
+
+
+
+#endif // VOXEL_DEBUG_STRUCT_H

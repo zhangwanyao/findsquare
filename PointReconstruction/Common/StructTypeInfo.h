@@ -1,0 +1,8 @@
+#pragma once
+typedef enum
+{
+	ROOM_STRUCT,
+	ROOM_SQUARED,
+	ROOM_SQUARED_MIN,
+	ROOM_SQUARED_MIN05
+}ROOM_XML_TYPE;

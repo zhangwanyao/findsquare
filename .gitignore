@@ -1,0 +1,25 @@
+# 忽略大文件和编译生成的文件
+*.dll
+*.lib
+*.mat
+*.om
+*.pts
+*.bin
+*.param
+*.ply
+*.json
+*.exe
+*.exp
+
+# 忽略 IDE 配置文件
+.idea/
+.vscode/
+*.suo
+*.user
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# 忽略日志和临时文件
+*.log
+*.tmp
