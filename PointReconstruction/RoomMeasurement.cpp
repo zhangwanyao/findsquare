@@ -305,7 +305,7 @@ bool RoomMeasurement::MeasureStraightness(void)
 		{
 			if (tmpMin > v) tmpMin = v;
 		}*/
-		
+
 		float tmpSum = std::accumulate(std::begin(distanceVector),std::end(distanceVector),0.0);
 		float tmpMean = tmpSum / distanceVector.size();
 
@@ -340,7 +340,7 @@ ResultData RoomMeasurement::MeasureGroundLevelness(void)
 	std::vector<cv::Point3f> plane_normals = mPRecon->GetPlanes().plane_normals;
 	std::vector<cv::Point3f> plane_centers = mPRecon->GetPlanes().plane_center;
 
-	for (int i = 0; i < plane_ground_idx.size(); i++) 
+	for (int i = 0; i < plane_ground_idx.size(); i++)
 	{
 		std::vector<cv::Point3f> plane_points = mPRecon->GetPlanes().plane_xyz[plane_ground_idx[i]];
 		cv::Point3f normal = plane_normals[plane_ground_idx[i]];
@@ -387,15 +387,15 @@ ResultData RoomMeasurement::MeasureGroundLevelness(void)
 		{
 			ruler_vertice_intersect_pts_dis[i].is_valid = std::get<0>(levelnessOld.points[i]);
 			ruler_vertice_intersect_pts_dis[i].value = std::get<1>(levelnessOld.points[i]);
-		}	
+		}
 
 		measure_levelness_range.GetLevelnessLocalRulersFromPlaneCore(pts, m_pts, ruler_vertice_intersect_pts_dis);
 #ifdef Debug_L
 		std::cout << "levelnessOld.points.size:  " << levelnessOld.points.size() << endl;
 		std::cout << "ruler_vertice_intersect_pts_dis.size:  " << ruler_vertice_intersect_pts_dis.size() << endl;
-		std::cout << "GroundLeveness: \n"; 
+		std::cout << "GroundLeveness: \n";
 		for (int i = 0; i < ruler_vertice_intersect_pts_dis.size(); i++)
-		{		
+		{
 #if 1
 			if (ruler_vertice_intersect_pts_dis[i].is_valid) {
 				std::cout << "\n" << ruler_vertice_intersect_pts_dis[i].value << " , " << ruler_vertice_intersect_pts_dis[i].ruler_endpts << std::endl;
@@ -408,7 +408,7 @@ ResultData RoomMeasurement::MeasureGroundLevelness(void)
 		result.ground_levelness = levelnessOld;
 		result.ground_levelness_local_ruler_vertice_intersect_pts_dis = ruler_vertice_intersect_pts_dis;
 	}
-	
+
 	return result;
 }
 
@@ -418,7 +418,7 @@ double getLinesAngle(cv::Point2d Pt1, cv::Point2d Pt2, cv::Point2d Pt3, cv::Poin
 	x = (Pt1.x - Pt2.x)*(Pt1.x - Pt2.x) + (Pt1.y - Pt2.y)*(Pt1.y - Pt2.y);
 	y = (Pt3.x - Pt4.x)*(Pt3.x - Pt4.x) + (Pt3.y - Pt4.y)*(Pt3.y - Pt4.y);
 
-	if ((Pt1 == Pt3) && (Pt2 == Pt4) ||(Pt1 == Pt2) && (Pt3 == Pt4)) 
+	if ((Pt1 == Pt3) && (Pt2 == Pt4) ||(Pt1 == Pt2) && (Pt3 == Pt4))
 	{	return 0; }
 
 	long double s1, s2;
@@ -615,7 +615,7 @@ void RoomMeasurement::getTempPoint(cv::Point2f pt0, cv::Point2f pt1, cv::Point2f
 	bool isCorssed = false;
 	cv::Point2f pa,pa1,pa2,ppa, pb;
 	getLinePara(pt0, pt1, pa);
-	
+
 	if ((pa.x == 0) && (pa.y == 0))
 	{
 		cp.x = pt2.x;
@@ -656,7 +656,7 @@ void RoomMeasurement::getTempPoint(cv::Point2f pt0, cv::Point2f pt1, cv::Point2f
 	MeasureBase::RotatePoint(temp, rotation_matrix_R, temp2);
 	cp.x = temp2.x;
 	cp.y = temp2.y;
-#endif	
+#endif
 }
 
 std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>& pts0, std::vector<cv::Point3f>& pts, float &LAera,
@@ -723,7 +723,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 				foot = GetFootOfPerpendicular(pt2, pt0, pt1);
 #ifdef Debug_R
 				cout << "N < 90 update h+1 foot: " << foot << endl;
-#endif			
+#endif
 				//// eg1
 				if (abs(PtsForRoomSquared[(h + 1) % round].x - foot.x) > abs(PtsForRoomSquared[(h + 1) % round].y - foot.y)) {
 					LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - foot.x) *abs(PtsForRoomSquared[(h+2) % round].y - foot.y)) / 2.0;
@@ -731,8 +731,8 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 					LAera += (abs(PtsForRoomSquared[(h + 1) % round].y - foot.y) *abs(PtsForRoomSquared[(h+2) % round].x - foot.x)) / 2.0;
 				}
 
-				PtsForRoomSquared[(h + 1) % round] = foot;  
-				
+				PtsForRoomSquared[(h + 1) % round] = foot;
+
 			}
 			else if (Angle > 90.0) {
 				cv::Point2f temp, cp;
@@ -740,7 +740,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 				if (getCorssedPoint(pt1, temp, pt2, pt3, cp)) { // pt1 temp 和  pt2pt3 lineseg corssed
 #ifdef Debug_R
 					cout << "N > 90, update h_+2 cp: " << cp << endl;
-#endif			
+#endif
 					//// eg2
 					if (abs(PtsForRoomSquared[(h + 1) % round].x - cp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - cp.y)) {
 						LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - cp.x) *abs(PtsForRoomSquared[(h+2) % round].y - cp.y)) / 2.0;
@@ -750,14 +750,14 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 					}
 
 					PtsForRoomSquared[(h + 2) % round] = cp;
-				
+
 				}
 				else {
 					float dist1 = sqrt(std::pow(temp.x - pt2.x, 2.0) + std::pow(temp.y - pt2.y, 2.0));
 					if (dist1 < wallThre) {
 #ifdef Debug_R
 						cout << "N > 90, update h_+2 temp: " << temp << endl;
-#endif	
+#endif
 						////eg3
 						if (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - temp.y)) {
 							LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) *abs(PtsForRoomSquared[(h + 2) % round].y - temp.y)) / 2.0;
@@ -781,7 +781,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 						if (Angle > angThre) {
 #ifdef Debug_R
 							cout << "N > 90, Angle < angThre:"<< Angle << angThre<<" temp: " << temp << endl;
-#endif	
+#endif
 							////eg4 TBD
 							if (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - temp.y)) {
 								LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) *abs(PtsForRoomSquared[(h + 2) % round].y - temp.y)) / 2.0;
@@ -798,12 +798,12 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 							}
 
 							PtsForRoomSquared[(h + 2) % round] = temp;
-							
+
 						}
 						else {
 #ifdef Debug_R
 							cout << "\n\n N > 90, insert temp: " << temp << endl;
-#endif	
+#endif
 
 							////eg5
 							if (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - temp.y)) {
@@ -825,7 +825,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 								}
 							}
 
-							
+
 #ifdef Debug_R
 							cout << "#### inserted position: " << (h + 2) % round <<"\n"<< endl;
 							resultA << "#### inserted position: " << (h + 2) % round << endl;
@@ -848,7 +848,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 				if (getCorssedPoint( pt1,temp, pt2, pt3, cp)) {
 #ifdef Debug_R
 					cout << "P < 90, update h_+2 cp: " << cp << endl;
-#endif				
+#endif
 					//// eg1
 					if (abs(PtsForRoomSquared[(h + 1) % round].x - cp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - cp.y)) {
 						LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - cp.x) *abs(PtsForRoomSquared[(h + 2) % round].y - cp.y)) / 2.0;
@@ -861,7 +861,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 				}
 				else {
 					float dist1 = sqrt(std::pow(temp.x - pt2.x, 2.0) + std::pow(temp.y - pt2.y, 2.0));
-					if (dist1 < wallThre) 
+					if (dist1 < wallThre)
 					{
 						////eg2
 						if (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - temp.y)) {
@@ -885,7 +885,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 						if (Angle > angThre) {
 #ifdef Debug_R
 							cout << "P < 90, Angle < angThre:" << Angle << angThre << " temp: " << temp << endl;
-#endif	
+#endif
                          ////eg3
 							if (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - temp.y)) {
 								LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) *abs(PtsForRoomSquared[(h + 2) % round].y - temp.y)) / 2.0;
@@ -905,7 +905,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 						else {
 #ifdef Debug_R
 							cout << "\n\n P < 90, insert temp: " << temp << endl;
-#endif	
+#endif
 							////eg4
 							if (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - temp.y)) {
 								LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - temp.x) *abs(PtsForRoomSquared[(h + 2) % round].y - temp.y)) / 2.0;
@@ -918,7 +918,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 							pts.insert(pts.begin() + ((h + 2) % round), pts[(h + 1) % round]);
 							wall_list.insert(wall_list.begin() + ((h + 2) % round), -1);
 							insertMap.push_back((h + 2) % round);
-							for (int m = 0; m < insertMap.size(); m++) 
+							for (int m = 0; m < insertMap.size(); m++)
 							{
 								if (((h + 2) % round) < insertMap[m])
 {
@@ -939,7 +939,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 				if (getCorssedPoint(pt0, pt1, pt2, pt3, cp)) { // pt0 pt1 和  pt2pt3 lineseg corssed
 #ifdef Debug_R
 					cout << "P > 90, update h_+2 cp: " << cp << endl;
-#endif				
+#endif
 					////eg5
 					if (abs(PtsForRoomSquared[(h + 1) % round].x - cp.x) > abs(PtsForRoomSquared[(h + 1) % round].y - cp.y)) {
 						LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - cp.x) *abs(PtsForRoomSquared[(h + 2) % round].y - cp.y)) / 2.0;
@@ -954,7 +954,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 					foot = GetFootOfPerpendicular(pt2, pt0, pt1);
 #ifdef Debug_R
 					cout << "P >90, update h_+1 foot: " << foot << endl;
-#endif			
+#endif
 					////eg6
 					if (abs(PtsForRoomSquared[(h + 1) % round].x - foot.x) > abs(PtsForRoomSquared[(h + 1) % round].y - foot.y)) {
 						LAera += (abs(PtsForRoomSquared[(h + 1) % round].x - foot.x) *abs(PtsForRoomSquared[(h + 2) % round].y - foot.y)) / 2.0;
@@ -1027,7 +1027,7 @@ std::vector<cv::Point2f>RoomMeasurement::ContourSquare(std::vector<cv::Point3f>&
 	//cv::imshow("PtsForRoomSquared", contourMap);
 	//cv::waitKey(0);
 #endif
-	
+
 #if 0
 	contourMap = 0;
 	for (int aa = 0; aa < pts.size(); aa++)
@@ -1273,19 +1273,26 @@ void SaveDebugImages(
 std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare(
 	cv::Mat &rotation_matrix0,
 	std::vector <std::pair< cv::Point3f, cv::Point3f>> &contour_squared1,
-	std::vector<std::vector<std::vector<cv::Point3f>>>& holes_projected, 
-	std::vector<std::vector<StructuredHole>>& holes_sq, 
+	std::vector<std::vector<std::vector<cv::Point3f>>>& holes_projected,
+	std::vector<std::vector<StructuredHole>>& holes_sq,
 	std::vector<std::vector<StructuredHole>>& holes_sq1,
 	int square_height, int square_width)
 {
 	log_info("[MakeRoomSquare]:start");
-	eRoomSquare_type type = SQUARE_BY_ROOMCONTOUR;
-	if(GetSquareMode()== 0) type = SQUARE_BY_ROOMCONTOUR;
-	if(GetSquareMode() == 1) type = SQUARE_BY_CUBOID;
-	if(GetSquareMode() == 2) type = SQUARE_BY_CONVEXITY;
-	if(GetSquareMode() == 3) type = SQUARE_BY_MIN_LOSS;
-	log_info("RoomMeasurement::MakeRoomSquare,  type: %d ", type);
-	std::cout << "RoomMeasurement::MakeRoomSquare, type: " << type << endl;
+	eRoomSquare_type type = SQUARE_BY_CONVEXITY;
+	const int square_mode_raw = GetSquareMode();
+	const int square_strategy_mode = GetSquareStrategyMode();
+	if (square_strategy_mode == SQUARE_STRATEGY_FIT_MAX_AREA) {
+		type = SQUARE_BY_MIN_LOSS;
+	}
+	else {
+		type = SQUARE_BY_CONVEXITY;
+	}
+	log_info("RoomMeasurement::MakeRoomSquare, square_mode_raw: %d, square_strategy_mode: %d, internal_type: %d",
+		square_mode_raw, square_strategy_mode, type);
+	std::cout << "RoomMeasurement::MakeRoomSquare, square_mode_raw: " << square_mode_raw
+		<< " square_strategy_mode: " << square_strategy_mode
+		<< " internal_type: " << type << endl;
 	contour_squared1.clear();
 	bool custom_square = false;
 
@@ -1381,36 +1388,46 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		Eigen::Vector4d meterPlane;
 		cv::Point3f p0, p1, p2;
 		Eigen::VectorXd myLine;
-		bool myIntersect;		
+		bool myIntersect;
 		const std::string config_json = GetAxisEqnConfig();
 		json_error_t error;
 		json_t *root = json_load_file(config_json.c_str(), 0, &error);
 		if (root)
 		{
 			//obtain transformation matrix
-			json_t* type = json_object_get(root, "type");			
+			json_t* type = json_object_get(root, "type");
 			std::string axisEqnType = (!type) ? "" : json_string_value(type);
 			std::cout << "axisEqnType: " << axisEqnType << std::endl;
 			if ((axisEqnType == "single") || (axisEqnType == "2D") || (!type)) {
 
-				//axis line			
+				//axis line
 				int axis_line_pl_eqn_size = json_array_size(json_object_get(root, "axis_line_pl_eqn"));
-				axisPlane.resize(axis_line_pl_eqn_size);
-				AxisLines.resize(axis_line_pl_eqn_size);
+				axisPlane.clear();
+				AxisLines.clear();
 				for (int i = 0; i < axis_line_pl_eqn_size; i++) {
-					auto cofe_arr = json_object_get(json_array_get(json_object_get(root, "axis_line_pl_eqn"), i), "axis_pl_eqn_coef");
+					auto axis_line_item = json_array_get(json_object_get(root, "axis_line_pl_eqn"), i);
+					bool is_axis_pl_fitted = json_is_true(json_object_get(axis_line_item, "is_axis_pl_fitted"));
+					std::cout << "[AxisDebug] axis_line_pl_eqn[" << i << "].is_axis_pl_fitted: " << is_axis_pl_fitted << std::endl;
+					if (!is_axis_pl_fitted) {
+						std::cout << "[AxisDebug] skip unfitted axis line index: " << i << std::endl;
+						continue;
+					}
+					axisPlane.emplace_back(Eigen::Vector4d::Zero());
+					AxisLines.emplace_back(Eigen::Vector4d::Zero());
+					auto cofe_arr = json_object_get(axis_line_item, "axis_pl_eqn_coef");
 					std::cout << "cofe_arr:\n" << json_number_value(json_array_get(cofe_arr, 0)) << "\n" << json_number_value(json_array_get(cofe_arr, 1)) << "\n" << json_number_value(json_array_get(cofe_arr, 2)) << "\n" << json_number_value(json_array_get(cofe_arr, 3)) << endl;
-					axisPlane[i][0] = json_number_value(json_array_get(cofe_arr, 0));
-					axisPlane[i][1] = json_number_value(json_array_get(cofe_arr, 1));
-					axisPlane[i][2] = json_number_value(json_array_get(cofe_arr, 2));
-					axisPlane[i][3] = json_number_value(json_array_get(cofe_arr, 3));
+					axisPlane.back()[0] = json_number_value(json_array_get(cofe_arr, 0));
+					axisPlane.back()[1] = json_number_value(json_array_get(cofe_arr, 1));
+					axisPlane.back()[2] = json_number_value(json_array_get(cofe_arr, 2));
+					axisPlane.back()[3] = json_number_value(json_array_get(cofe_arr, 3));
 
 					cv::Mat axisPlaneMat = cv::Mat(4, 1, CV_32FC1);
-					axisPlaneMat.at<float>(0, 0) = axisPlane[i][0];
-					axisPlaneMat.at<float>(1, 0) = axisPlane[i][1];
-					axisPlaneMat.at<float>(2, 0) = axisPlane[i][2];
-					axisPlaneMat.at<float>(3, 0) = axisPlane[i][3];
+					axisPlaneMat.at<float>(0, 0) = axisPlane.back()[0];
+					axisPlaneMat.at<float>(1, 0) = axisPlane.back()[1];
+					axisPlaneMat.at<float>(2, 0) = axisPlane.back()[2];
+					axisPlaneMat.at<float>(3, 0) = axisPlane.back()[3];
 				}
+				std::cout << "[AxisDebug] fitted axis plane count: " << axisPlane.size() << ", total axis_line_pl_eqn count: " << axis_line_pl_eqn_size << std::endl;
 				//markers
 				if (axisEqnType == "single") {
 					int markers_size = json_array_size(json_object_get(root, "markers"));
@@ -1448,20 +1465,29 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				}
 			}
 			else if (axisEqnType == "global") {
-				
-				//axis line			
-				int axis_line_pl_eqn_size = json_array_size(json_object_get(root, "axis_line_pl_eqn"));
-				axisPlane.resize(axis_line_pl_eqn_size);
-				for (int i = 0; i < axis_line_pl_eqn_size; i++) {
-					auto cofe_arr = json_object_get(json_array_get(json_object_get(root, "axis_line_pl_eqn"), i), "axis_pl_eqn_coef");
-					std::cout << "cofe_arr:\n" << json_number_value(json_array_get(cofe_arr, 0)) << "\n" << json_number_value(json_array_get(cofe_arr, 1)) << "\n" << json_number_value(json_array_get(cofe_arr, 2)) << "\n" << json_number_value(json_array_get(cofe_arr, 3)) << endl;
-					axisPlane[i][0] = json_number_value(json_array_get(cofe_arr, 0));
-					axisPlane[i][1] = json_number_value(json_array_get(cofe_arr, 1));
-					axisPlane[i][2] = json_number_value(json_array_get(cofe_arr, 2));
-					axisPlane[i][3] = json_number_value(json_array_get(cofe_arr, 3));								
-				}
 
-				//markers			
+				//axis line
+				int axis_line_pl_eqn_size = json_array_size(json_object_get(root, "axis_line_pl_eqn"));
+				axisPlane.clear();
+				for (int i = 0; i < axis_line_pl_eqn_size; i++) {
+					auto axis_line_item = json_array_get(json_object_get(root, "axis_line_pl_eqn"), i);
+					bool is_axis_pl_fitted = json_is_true(json_object_get(axis_line_item, "is_axis_pl_fitted"));
+					std::cout << "[AxisDebug] axis_line_pl_eqn[" << i << "].is_axis_pl_fitted: " << is_axis_pl_fitted << std::endl;
+					if (!is_axis_pl_fitted) {
+						std::cout << "[AxisDebug] skip unfitted axis line index: " << i << std::endl;
+						continue;
+					}
+					axisPlane.emplace_back(Eigen::Vector4d::Zero());
+					auto cofe_arr = json_object_get(axis_line_item, "axis_pl_eqn_coef");
+					std::cout << "cofe_arr:\n" << json_number_value(json_array_get(cofe_arr, 0)) << "\n" << json_number_value(json_array_get(cofe_arr, 1)) << "\n" << json_number_value(json_array_get(cofe_arr, 2)) << "\n" << json_number_value(json_array_get(cofe_arr, 3)) << endl;
+					axisPlane.back()[0] = json_number_value(json_array_get(cofe_arr, 0));
+					axisPlane.back()[1] = json_number_value(json_array_get(cofe_arr, 1));
+					axisPlane.back()[2] = json_number_value(json_array_get(cofe_arr, 2));
+					axisPlane.back()[3] = json_number_value(json_array_get(cofe_arr, 3));
+				}
+				std::cout << "[AxisDebug] fitted axis plane count: " << axisPlane.size() << ", total axis_line_pl_eqn count: " << axis_line_pl_eqn_size << std::endl;
+
+				//markers
 				int markers_size = json_array_size(json_object_get(root, "markers"));
 				std::cout << "markers_size: " << markers_size << std::endl;
 				markers_pairs.resize(markers_size);
@@ -1500,10 +1526,14 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			}
 		}
 		else {
-			json_decref(root);
 			axisPlane.resize(1);
-			std::cout << "Can not load :" << config_json.c_str() << "use default plane !!!" << endl;
+			std::cout << "[AxisDebug] Can not load :" << config_json.c_str() << " use default plane !!!" << endl;
 			axisPlane[0][0] = 0; 	axisPlane[0][1] = 1; axisPlane[0][2] = 0; axisPlane[0][3] = 0;
+		}
+		if (axisPlane.empty()) {
+			std::cout << "[AxisDebug] No fitted axis plane from config, fallback to default y=0 plane." << std::endl;
+			axisPlane.resize(1);
+			axisPlane[0][0] = 0; axisPlane[0][1] = 1; axisPlane[0][2] = 0; axisPlane[0][3] = 0;
 		}
 		std::cout << "axis plane Eqn:" << axisPlane[0][0] << "," << axisPlane[0][1] << "," << axisPlane[0][2] << endl;
 		groundPlane = equationOfPlane(pts2[0].x, pts2[0].y, pts2[0].z, pts2[1].x, pts2[1].y, pts2[1].z, pts2[2].x, pts2[2].y, pts2[2].z);
@@ -1512,7 +1542,14 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			std::cout << "\n myLine: \n" << myLine << endl;
 			std::cout << "plane0:\n" << axisPlane[0] << "\n plane1:\n" << groundPlane << endl;
 		}
+		else {
+			std::cout << "[AxisDebug] planeWithPlaneIntersection failed, axis plane may be parallel/invalid. fallback to reference wall mode." << std::endl;
+		}
 		cv::Point3f lnor(myLine[3], myLine[4], myLine[5]);
+		if (std::abs(lnor.x) < 1e-6f && std::abs(lnor.y) < 1e-6f) {
+			lnor = cv::Point3f(axisPlane[0][1], -axisPlane[0][0], 0.f);
+			std::cout << "[AxisDebug] use axis plane normal fallback to build line direction: " << lnor << std::endl;
+		}
 		std::vector<Point3f> lnors;
 		lnors.push_back(lnor);
 		for (int k = 0; k < pts2.size(); k++)
@@ -1520,7 +1557,11 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			cv::Point3f ptsnor(pts2[(k + 1) % pts2.size()].x - pts2[k].x, pts2[(k + 1) % pts2.size()].y - pts2[k].y, 0);
 			float t = (lnors[0].x * ptsnor.x + lnors[0].y * ptsnor.y) /
 					    (sqrt(pow(lnors[0].x, 2) + pow(lnors[0].y, 2)) * sqrt(pow(ptsnor.x, 2) + pow(ptsnor.y, 2)));
-			float theta = acos(t) * (180 / M_PI);
+			float t_clamped = std::max(-1.0f, std::min(1.0f, t));
+			if (t != t_clamped) {
+				std::cout << "[AxisDebug] acos input out of range, clamp from " << t << " to " << t_clamped << std::endl;
+			}
+			float theta = acos(t_clamped) * (180 / M_PI);
 
 			if (theta > 90.0) {
 				if (angle > 180.0 - theta) {
@@ -1563,7 +1604,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 					MeasureBase::RotatePoint(cp, b_mat_to_y, cpb);
 					axis_p.first = (nref_idx + 1) % rd; axis_p.second = pts2[(nref_idx + 1) % rd];
 
-					pts2[(nref_idx + 1) % rd].x = cpb.x; 
+					pts2[(nref_idx + 1) % rd].x = cpb.x;
 					pts2[(nref_idx + 1) % rd].y = cpb.y;
 				}
 				else {
@@ -1574,7 +1615,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 					//cout << cp <<" "<< p11 << endl;
 					MeasureBase::RotatePoint(cp, b_mat_to_y, cpb);
 					axis_p.first = nref_idx; axis_p.second = pts2[nref_idx];
-					pts2[nref_idx].x = cpb.x; 
+					pts2[nref_idx].x = cpb.x;
 					pts2[nref_idx].y = cpb.y;
 				}
 			}
@@ -1602,7 +1643,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			}
 		}
 	}
-	else {	   
+	else {
 		PlaneCutResultInterface  mPlane = mPRecon->GetPlaneCutResultInterface();
 		std::vector<ePlane_Direction>  mPlaneDire = mPRecon->GetPlaneDire();
 		cv::Point3f normal_plane = mPlane.plane_normals[ref_wall_id];
@@ -1628,11 +1669,11 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		Brotation_matrix.at<float>(1, 0) = sin(angle_rot);
 		Brotation_matrix.at<float>(1, 1) = cos(angle_rot);
 		Brotation_matrix.at<float>(2, 2) = 1.f;
-		cv::transpose(Brotation_matrix, b_mat_to_y);	
-	}	
+		cv::transpose(Brotation_matrix, b_mat_to_y);
+	}
 
 	rotation_matrix0 = Brotation_matrix;
-	std::cout << "Brotation_matrix:\n" << Brotation_matrix << endl;	
+	std::cout << "Brotation_matrix:\n" << Brotation_matrix << endl;
 
 
 	pts = pts_int = MathOperation::plane_rot(Brotation_matrix, pts2b);
@@ -1708,7 +1749,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			SavePoint3fDataT("original_holes_" + ss.str() + ".txt", mSPlane2[wall].holes[n].vertice);
 #endif
 			mSPlane[wall].holes[n].vertice = MathOperation::plane_rot(Brotation_matrix, mSPlane2[wall].holes[n].vertice);
-#ifdef Debug_MHS			
+#ifdef Debug_MHS
 			cout << "====original holes rotated to axis==========wall:" << wall << " holes: " << n << " vertice: \n" << mSPlane[wall].holes[n].vertice << endl;
 			SavePoint3fDataT("hole_rot2axis_" + ss.str() + ".txt", mSPlane2[wall].holes[n].vertice);
 #endif
@@ -1765,11 +1806,11 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 						//CVAPI(double) cvPointPolygonTest(const CvArr* contour,CvPoint2D32f pt, int measure_dist);
 						cv::Point2f testp = Point2f(flateness_defect2[i].second[f].second.x, flateness_defect2[i].second[f].second.y);
 						if (cvPointPolygonTest(myPolyc, testp, true) > margin) {
-							/*std::cout << "plane_ceiling_idx[" << j << "]: " << mPRecon->GetPlanes().plane_ceiling_idx[j] 
+							/*std::cout << "plane_ceiling_idx[" << j << "]: " << mPRecon->GetPlanes().plane_ceiling_idx[j]
 								<< " cf0: "<< f<<" "<< flateness_defect2[i].second[f].first << " " << flateness_defect2[i].second[f].second << endl;*/
 							ceiling_int[j].push_back(flateness_defect2[i].second[f].second);
 							break;
-						}				
+						}
 					}
 					for (int f = flateness_defect2[i].second.size()-1 ; f >=0; f--) {
 						cv::Point2f testp = Point2f(flateness_defect2[i].second[f].second.x, flateness_defect2[i].second[f].second.y);
@@ -1780,7 +1821,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							break;
 						}
 					}
-					
+
 					if (ceiling_int[j].size() == 2) {
 						std::vector <std::pair< float, cv::Point3f>> temp;
 						if (HasOneMeterLine()) {
@@ -1796,7 +1837,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 					else {
 						std::cout << "plane_ceiling_idx[" << j << "]: " << mPRecon->GetPlanes().plane_ceiling_idx[j] << " Don't have any valid defect point!!" << endl;
 					}
-	
+
 				}
 			}
 			ground_int.resize(mPRecon->GetPlanes().plane_ground_idx.size());
@@ -1811,7 +1852,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 					}
 					for (int f = 0; f < flateness_defect2[i].second.size(); f++) {
 						//CVAPI(double) cvPointPolygonTest(const CvArr* contour,CvPoint2D32f pt, int measure_dist);
-						cv::Point2f testp = Point2f(flateness_defect2[i].second[f].second.x, 
+						cv::Point2f testp = Point2f(flateness_defect2[i].second[f].second.x,
 							                        flateness_defect2[i].second[f].second.y);
 						if (cvPointPolygonTest(myPoly, testp, true) > margin) {
 							std::cout << "plane_ground_idx[" << j << "]: " << mPRecon->GetPlanes().plane_ground_idx[j]
@@ -1823,7 +1864,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 						}
 					}
 					for (int f = flateness_defect2[i].second.size() - 1; f >= 0; f--) {
-						cv::Point2f testp = Point2f(flateness_defect2[i].second[f].second.x, 
+						cv::Point2f testp = Point2f(flateness_defect2[i].second[f].second.x,
 							                        flateness_defect2[i].second[f].second.y);
 						if (cvPointPolygonTest(myPoly, testp, true) > margin) {
 							std::cout << "plane_ground_idx[" << j << "]: " << mPRecon->GetPlanes().plane_ground_idx[j]
@@ -1880,7 +1921,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 								MeasureBase::RotatePoint(cur_int0, b_mat_to_y, ceiling_h_onemeter_int[j][n].first);
 								MeasureBase::RotatePoint(cur_int1, b_mat_to_y, ceiling_h_onemeter_int[j][n].second);
 								//cout << "xyceiling_h_onemeter_int n: " << n << " first: " << ceiling_h_onemeter_int[j][n].first << " second: " << ceiling_h_onemeter_int[j][n].second << endl;
-							}					
+							}
 						//	break;
 						}
 					}
@@ -1984,7 +2025,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 
 	std::vector<std::pair<int, std::vector<cv::Point3f>>> flateness_defect;
-	for (int i = 0; i < flateness_defect2.size(); i++) 
+	for (int i = 0; i < flateness_defect2.size(); i++)
 	{
 		std::vector<cv::Point3f> temp;
 		for (int m = 0; m < flateness_defect2[i].second.size(); m++)
@@ -2045,7 +2086,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			PtsForRoomSquaredTemp = ContourSquare(pts0, pts1, LAera, ref_wall_contour_id, wall_list);
 			PtsForRoomSquared.push_back(PtsForRoomSquaredTemp);
 		}
-		
+
 		if (pts0.size() != PtsForRoomSquared[minIdx].size())
 		{
 #ifdef Debug_M
@@ -2090,7 +2131,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			if ((PtsForRoomSquared[minIdx][(md + rd - 1) % rd].x - PtsForRoomSquared[minIdx][(md + 1) % rd].x)*(PtsForRoomSquared[minIdx][md].y - PtsForRoomSquared[minIdx][(md + 1) % rd].y) -
 				(PtsForRoomSquared[minIdx][(md + rd - 1) % rd].y - PtsForRoomSquared[minIdx][(md + 1) % rd].y)*(PtsForRoomSquared[minIdx][md].x - PtsForRoomSquared[minIdx][(md + 1) % rd].x) > 0)
 			{
-				//cout << "===========counterclockwise." << endl;		
+				//cout << "===========counterclockwise." << endl;
 				for (int k = 0; k < PtsForRoomSquared_sh.size(); k++)
 				{
 					if (abs(PtsForRoomSquared_sh[k].x - PtsForRoomSquared_sh[(k + 1) % rd].x) >
@@ -2219,6 +2260,8 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 
 	if ((type == SQUARE_BY_CUBOID) || (type == SQUARE_BY_CONVEXITY))
 	{
+		std::cout << "[SquareMode] CUBOID/CONVEXITY branch: build cuboid-like contour from matched wall vertices first, then ContourSquare."
+			<< std::endl;
 #ifdef Debug_RC
 		cout << "\n ====================SQUARE_BY_CUBOID||SQUARE_BY_CONVEXITY£¬ ref_wall_contour_id:" << ref_wall_contour_id << endl;
 #endif
@@ -2373,7 +2416,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				cout << nor_ori << endl;
 #endif
 				walls_squareness[k].first = Util_Math::vec3_angle_deg(nor_squ, nor_ori);
-				walls_squareness[k].second = GetAngle(pts0[(k+ pts0.size()-1)% pts0.size()].x, pts0[(k + pts0.size() - 1) % pts0.size()].y, pts0[k].x, pts0[k].y, 
+				walls_squareness[k].second = GetAngle(pts0[(k+ pts0.size()-1)% pts0.size()].x, pts0[(k + pts0.size() - 1) % pts0.size()].y, pts0[k].x, pts0[k].y,
 					                                 pts0[(k + 1) % pts0.size()].x, pts0[(k + 1) % pts0.size()].y);
 				//cout << "walls_squareness[" << k << "].first: " << walls_squareness[k].first << endl;
 				//cout << "walls_squareness[" << k << "].second: " << walls_squareness[k].second << endl;
@@ -2432,7 +2475,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				if ((CuboidUpdatedContourSquared[(md + rd - 1) % rd].x - CuboidUpdatedContourSquared[(md + 1) % rd].x)*(CuboidUpdatedContourSquared[md].y - CuboidUpdatedContourSquared[(md + 1) % rd].y) -
 					(CuboidUpdatedContourSquared[(md + rd - 1) % rd].y - CuboidUpdatedContourSquared[(md + 1) % rd].y)*(CuboidUpdatedContourSquared[md].x - CuboidUpdatedContourSquared[(md + 1) % rd].x) > 0)
 				{
-					//cout << "===========counterclock." << endl;	
+					//cout << "===========counterclock." << endl;
 					for (int k = 0; k < PtsForRoomSquared_sh.size(); k++)
 					{
 						if (abs(PtsForRoomSquared_sh[k].x - PtsForRoomSquared_sh[(k + 1) % rd].x) >
@@ -2501,7 +2544,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				tempDis.y = abs(CuboidUpdatedContourSquared[k].y - CuboidUpdatedContour[k].y);
 				CuboidContourSquaredJson.push_back(std::make_pair(tempPts, tempDis));
 				cv::Point3f  tempDis3;
-	
+
 				//cout << "squared rback tempPts i: " << k << " " << tempPts << endl;
 				tempDis3.x = abs(CuboidUpdatedContourSquared[k].x - CuboidUpdatedContour[k].x);
 				tempDis3.y = abs(CuboidUpdatedContourSquared[k].y - CuboidUpdatedContour[k].y);
@@ -2568,7 +2611,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 	std::vector<std::vector<std::pair<float, cv::Point3f>>> squared_defect_r;
 	squared_defect_r.resize(ContourSquaredFConvexityUpdated.size());
 
-	if (SQUARE_BY_CONVEXITY == type) 
+	if (SQUARE_BY_CONVEXITY == type)
 	{
 #ifdef Debug_COV
 		cout << "\n\n====================SQUARE_BY_CONVEXITY" << endl;
@@ -2605,7 +2648,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			bool  nextIsInserted = false;
 			bool  skipThis = false;
 
-			for (int x = 0; x < insertMap.size(); x++) 
+			for (int x = 0; x < insertMap.size(); x++)
 			{
 				if (k == insertMap[x] -1) {
 					nextIsInserted = true;
@@ -2624,9 +2667,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				bool Sidx = false;
 				if (wallList[j] == -1)
 					continue;
-				
+
 #ifdef Debug_COV
-				cout << "wallList :" << wallList[j] << endl;		
+				cout << "wallList :" << wallList[j] << endl;
 #endif
 				for (int i = 0; i < mSPlane[wallList[j]].vertices.size(); i++)
 				{
@@ -2710,13 +2753,13 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							p2.x = ContourSquaredFConvexityUpdated[(k + 1) % round].first.x;
 							p2.y = ContourSquaredFConvexityUpdated[(k + 1) % round].first.y;
 						}
-						
+
 #ifdef Debug_COV
 						cout << "===COV==Fidx Sidx = true;1;====" << endl;
 					//	cout << mSPlane[wallList[j]].vertices[i] << endl;
 						cout << " j:" << j << "[wallList[j]: " << wallList[j]  << "  xxxu: " << p1 << " , " << ContourSquaredFConvexityUpdated[(k + 1) % round].first << endl;
 #endif
-						
+
 
 						if (abs(p1.x - p2.x) > abs(p1.y - p2.y))
 						{
@@ -2739,7 +2782,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							square_defect_max[k].second /= 1000000000;
 #endif
 							bool find_wallflatness = false;
-							for (int f = 0; f < flateness_defect.size(); f++) 
+							for (int f = 0; f < flateness_defect.size(); f++)
 							{
 								if ((flateness_defect[f].first == wallList[j]))
 								{
@@ -2751,9 +2794,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 									float diffmax = 0;
 									float dis = 0;
 									for (int m = 0; m < flateness_defect[f].second.size(); m++)
-									{	
+									{
 										//if (flateness_defect[f].second[m].first > 0)
-										{ 
+										{
 #ifdef DBRT
 											pd.x = flateness_defect[f].second[m].x;//second.x;
 											pd.y = flateness_defect[f].second[m].y;//second.y;
@@ -2761,8 +2804,8 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #else
 											pd.x = flateness_defect[f].second[m].second.x;
 											pd.y = flateness_defect[f].second[m].second.y;
-#endif									
-#if 1										
+#endif
+#if 1
 											if (abs(p1.y) > abs(pd.y)) //need update
 											{
 												dis = abs(p1.y) - abs(pd.y);
@@ -2778,10 +2821,10 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 													convPtsF[wallList[j]] = true;
 #ifdef Debug_COV
 													//cout << "y axis, diffmax: " << diffmax << endl;
-#endif									
+#endif
 												}
 											}
-											else { 
+											else {
 											//	cout << "ruler_width: " << ruler_width << " ruler_height:" << ruler_height << endl;
 												if ((abs(flateness_defect[f].second[m].x) - abs(p1.x)) != 0)
 													filling_volume += (ruler_width * ruler_height*(abs(pd.y) - abs(p1.y)));
@@ -2808,7 +2851,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 												cout << "y theta: " << theta << endl;
 												cout << "===cos(theta*M_PI/180.0): " << cos(theta*M_PI / 180.0) << endl;
 												cout << "diffmax: " << diffmax << endl;
-#endif									
+#endif
 											}
 #endif
 										}
@@ -2822,7 +2865,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 										ContourSquaredFConvexityUpdated[(k) % round].first.y += diffmax;
 										ContourSquaredFConvexityUpdated[(k + 1) % round].first.y += diffmax;
-							
+
 									}
 									else {
 #ifdef Debug_COV
@@ -2833,9 +2876,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 									}
 #else
 									int sign = ContourSquaredFConvexityUpdated[k].first.y / abs(ContourSquaredFConvexityUpdated[k].first.y);
-#ifdef Debug_COV										
+#ifdef Debug_COV
 									cout << "y sign:" << sign << endl;
-#endif									
+#endif
 									if (abs(ContourSquaredFConvexityUpdated[k].first.y) > diffmax) {
 										ContourSquaredFConvexityUpdated[k].first.y = sign* (abs(ContourSquaredFConvexityUpdated[k].first.y) - diffmax);
 									}
@@ -2882,13 +2925,13 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 									find_wallflatness = true;
 								//	sort(flateness_defect[f].second.begin(), flateness_defect[f].second.end(), LessSortX);
-								
+
 
 									float diffmax = 0;
 									float dis = 0;
 									for (int m = 0; m < flateness_defect[f].second.size(); m++)
 									{
-								//		if (flateness_defect[f].second[m].first > 0) 
+								//		if (flateness_defect[f].second[m].first > 0)
 										{
 #if 1
 #ifdef DBRT
@@ -2912,7 +2955,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 													convPtsF[wallList[j]] = true;
 #ifdef Debug_COV
 													//cout << " x axis, diffmax: " << diffmax << endl;
-#endif									
+#endif
 												}
 											}
 											else {
@@ -2937,7 +2980,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 											double theta = getLinesAngle(ContourSquaredForConvexity[k].first,
 												ContourSquaredForConvexity[(k + 1) % round].first,P0, P1);
 											if ((theta <= 90) && (theta >= 0)) {
-												
+
 												diff = flateness_defect[f].second[m].first * cos(theta * M_PI/180.0) - abs(abs(x1) - abs(flateness_defect[f].second[m].second.x));
 												//diff = flateness_defect[f].second[m].first  - abs(abs(x1) - abs(flateness_defect[f].second[m].second.x));
 											}
@@ -2949,15 +2992,15 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 											if ((diff > 0) && (diffmax < diff))
 											{
 												diffmax = diff;
-#ifdef Debug_COV									
+#ifdef Debug_COV
 												cout << "y theta: " << theta << endl;
 												cout << "==cos(theta*M_PI/180.0): " << cos(theta*M_PI / 180.0) << endl;
 												cout << "diffmax: " << diffmax << endl;
-#endif									
+#endif
 											}
 #endif
-										}								
-									}	
+										}
+									}
 									square_defect_max[k].first = diffmax;
 #if 1
 									if (p1.y > p2.y)
@@ -3006,7 +3049,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 
 						filling_vol[k].first = filling_volume / 1000000000;
 						float temp_v = 0;
-						for (int p = 0; p < squared_defect_r[k].size(); p++) 
+						for (int p = 0; p < squared_defect_r[k].size(); p++)
 						{
 							temp_v += squared_defect_r[k][p].first * ruler_width * ruler_height;
 						}
@@ -3019,7 +3062,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				}
 				if (Exit0) {
 					break;
-				}			
+				}
 			}
 			std::cout << " k : " << k << " defect_max:" << square_defect_max[k].first <<" area:"<<square_defect_max[k].second << endl;
 		}//loop
@@ -3064,20 +3107,20 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 	{
 		std::cout << "squared wall width0: " << DisOf2Points2f(ContourSquaredFConvexityUpdatedNew[i], ContourSquaredFConvexityUpdatedNew[(i + 1) % rnd]) << endl;
 	}
-	
+
 	wall_width_input.resize(wallList.size());
 
 	wall_width_input[0] = std::make_pair(3498, 1);
 	wall_width_input[1] = std::make_pair(3710, 2);
 	wall_width_input[2] = std::make_pair(3498, 3);
 	wall_width_input[3] = std::make_pair(3710, 0);
-	
+
 	std::vector<std::pair<float, int>> convexity_diff; // 凸点找方后墙宽大于设计值的差值， 当前墙面在contour中的索引
 	wall_width_info.resize(wallList.size());
 	std::cout << "wallList.size():" << wallList.size() << " wall_list.size():" << wall_list.size() << endl;
 
-	// diss 的wall id 怎么确定？ 
-	for (int j = 0; j < wall_width_input.size(); j++) 
+	// diss 的wall id 怎么确定？
+	for (int j = 0; j < wall_width_input.size(); j++)
 	{
 		for (int w = 0; w < wall_list.size(); w++)
 		{
@@ -3089,16 +3132,16 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				std::cout << "convexity_diff, first: "<< diss - wall_width_input[j].first << " second:" << w << " squared wall width1:"<< diss << endl;
 			}
 		}
-	}	
+	}
 	sort(convexity_diff.begin(), convexity_diff.end(), compln);
 	for (int i = 0; i < convexity_diff.size(); i++)
-	{ 
+	{
 		std::cout << "sorted convexity_diff, first: " << convexity_diff[i].first << " second:" << i << endl;
 	}
 #if 0
 	for (int cidx = 0; cidx < convexity_diff.size(); cidx++) //
 	{ //按误差大小顺序遍历所有墙面
-		int i = convexity_diff[cidx].second; //wall_list 
+		int i = convexity_diff[cidx].second; //wall_list
 		float square2_dis = DisOf2Points2f(ContourSquaredFConvexityUpdatedNew[i], ContourSquaredFConvexityUpdatedNew[(i +1) % rnd]);
 		wall_width_info[i].first = square2_dis;
 		if (convexity_diff[cidx].first >= 0)
@@ -3110,13 +3153,13 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			cout <<"cidx:"<< cidx << " squared wall width > wall_width_input" << endl;
 			continue;
 		}
-		else 
-		{//凸点找方后墙宽小于设计值	
+		else
+		{//凸点找方后墙宽小于设计值
 			if (abs(ContourSquaredFConvexityUpdatedNew[i].x - ContourSquaredFConvexityUpdatedNew[(i +1) % rnd].x) > abs(ContourSquaredFConvexityUpdatedNew[i ].y - ContourSquaredFConvexityUpdatedNew[(i +1) % rnd].y))
 			{
-				if (ContourSquaredFConvexityUpdatedNew[i].x > ContourSquaredFConvexityUpdatedNew[(i +1) % rnd].x) 
+				if (ContourSquaredFConvexityUpdatedNew[i].x > ContourSquaredFConvexityUpdatedNew[(i +1) % rnd].x)
 				{//d
-					if ((ContourSquaredFConvexityUpdatedNew[(i - 1 + rnd) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y) && (ContourSquaredFConvexityUpdatedNew[(i +2) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y)) 
+					if ((ContourSquaredFConvexityUpdatedNew[(i - 1 + rnd) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y) && (ContourSquaredFConvexityUpdatedNew[(i +2) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y))
 					{//d1
 						if (defect_state[(i - 1 + rnd) % rnd] && defect_state[(i + 1) % rnd])
 						{ //两面墙都未处理过
@@ -3133,7 +3176,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							if ((square_defect_max[(i - 1 + rnd) % rnd].first + square_defect_max[(i + 1) % rnd].first + square2_dis) > wall_width_in[i])
 							{// 凸点找方前墙宽大于设计值，根据凸点比例分配去除的凸点量
 								cout << "d d1 b2  line:" << __LINE__ << endl;
-								float diff =  - square2_dis + wall_width_in[i];	
+								float diff =  - square2_dis + wall_width_in[i];
 								float denominator = square_defect_max[(i - 1 + rnd) % rnd].first + square_defect_max[(i + 1 + rnd) % rnd].first;
 								ContourSquaredFConvexityUpdatedNew[(i - 1 + rnd) % rnd].x += (square_defect_max[(i - 1 + rnd) % rnd].first / denominator * diff);
 								ContourSquaredFConvexityUpdatedNew[i ].x += (square_defect_max[(i - 1 + rnd) % rnd].first / denominator * diff);
@@ -3145,7 +3188,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							defect_state[(i - 1 + rnd) % rnd] = false;
 							defect_state[(i + 1) % rnd] = false;
 						}
-						if (defect_state[(i - 1 + rnd) % rnd] && !defect_state[(i + 1) % rnd]) 
+						if (defect_state[(i - 1 + rnd) % rnd] && !defect_state[(i + 1) % rnd])
 						{//上一面墙还未处理过凸点
 							if ((square_defect_max[(i - 1 + rnd) % rnd].first + square2_dis) < wall_width_in[i])
 							{ // 上一面墙去除凸点墙宽小于设计值，去除上一面墙所有凸点
@@ -3184,7 +3227,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							defect_state[(i + 1) % rnd] = false;
 						}
 					}
-					if ((ContourSquaredFConvexityUpdatedNew[(i - 1 + rnd) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y) && (ContourSquaredFConvexityUpdatedNew[(i +2) % rnd].y < ContourSquaredFConvexityUpdatedNew[i ].y)) 
+					if ((ContourSquaredFConvexityUpdatedNew[(i - 1 + rnd) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y) && (ContourSquaredFConvexityUpdatedNew[(i +2) % rnd].y < ContourSquaredFConvexityUpdatedNew[i ].y))
 					{//d2
 						if (defect_state[(i - 1 + rnd) % rnd] && defect_state[(i + 1) % rnd])
 						{//两面墙都未处理过
@@ -3235,7 +3278,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 						{ //下一面墙还未处理过凸点
 							cout << "d d2 x1  line:" << __LINE__ << endl;
 							convexity_mod[(i +1) % rnd] = 0;
-							defect_state[(i + 1) % rnd] = false;	
+							defect_state[(i + 1) % rnd] = false;
 						}
 					}
 					if ((ContourSquaredFConvexityUpdatedNew[(i - 1 + rnd) % rnd].y < ContourSquaredFConvexityUpdatedNew[i ].y) && (ContourSquaredFConvexityUpdatedNew[(i +2) % rnd].y > ContourSquaredFConvexityUpdatedNew[i ].y))
@@ -3839,7 +3882,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			}
 		}
 		//wall_width_in[i] = DisOf2Points2f(ContourSquaredFConvexityUpdatedNew[i], ContourSquaredFConvexityUpdatedNew[(i + 1) % rnd]);
-	}	
+	}
 
 
 	for (int i = 0; i < rnd; i++)
@@ -3874,9 +3917,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		filling_vol_opt[k] = filling_vol[k].second - (rm_vol / 1000000000);
 		cout <<"squared_defect_info[k].size():"<< squared_defect_info[k].size() << endl;
 	}
-#endif	
+#endif
 
-		if (pts0.size() != CuboidUpdatedContourSquared.size()) 
+		if (pts0.size() != CuboidUpdatedContourSquared.size())
 		{
 			std::cout << "##### ==>  SQUARE_BY_CONVEXITY  pts0.size() != CuboidUpdatedContourSquared.size()" << endl;
 			for (int k = 0; k < pts.size(); k++)
@@ -3917,7 +3960,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			if ((CuboidUpdatedContourSquared[(md + rd - 1) % rd].x - CuboidUpdatedContourSquared[(md + 1) % rd].x)*(CuboidUpdatedContourSquared[md].y - CuboidUpdatedContourSquared[(md + 1) % rd].y) -
 				(CuboidUpdatedContourSquared[(md + rd - 1) % rd].y - CuboidUpdatedContourSquared[(md + 1) % rd].y)*(CuboidUpdatedContourSquared[md].x - CuboidUpdatedContourSquared[(md + 1) % rd].x) > 0) {
 				//cout << "===========counterclock." << endl;
-			
+
 				for (int k = 0; k < PtsForRoomSquared_sh.size(); k++)
 				{
 					if (abs(PtsForRoomSquared_sh[k].x - PtsForRoomSquared_sh[(k + 1) % rd].x) >
@@ -4090,12 +4133,12 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 						abs(ContourSquaredForHoles[k].first.y - ContourSquaredForHoles[(k + 1) % round].first.y))
 					{
 						for (int n = 0; n < mSPlane[wall].holes.size(); n++)
-						{		
+						{
 							if (mSPlane[wall].holes[n].vertice.size() != 4)
 								continue;
 							mSPlane[wall].holes[n].vertice_s = mSPlane[wall].holes[n].vertice;
 
-							for (int m = 0; m < mSPlane[wall].holes[n].vertice.size(); m++) 
+							for (int m = 0; m < mSPlane[wall].holes[n].vertice.size(); m++)
 							{
 									mSPlane[wall].holes[n].vertice_s[m].y = Pa.x*mSPlane[wall].holes[n].vertice[m].x + Pa.y;
 							}
@@ -4108,9 +4151,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							for (int m = 0; m < mSPlane[wall].holes[n].vertice_s.size(); m++)
 							{
 								if (abs(mSPlane[wall].holes[n].vertice_s[m].x - mSPlane[wall].holes[n].vertice_s[(m + 1)%4].x) >
-									abs(mSPlane[wall].holes[n].vertice_s[m].z - mSPlane[wall].holes[n].vertice_s[(m + 1)%4].z)) 
+									abs(mSPlane[wall].holes[n].vertice_s[m].z - mSPlane[wall].holes[n].vertice_s[(m + 1)%4].z))
 								{  //x
-									if (mSPlane[wall].holes[n].vertice_s[m].z < mSPlane[wall].holes[n].vertice_s[(m + 2) % 4].z) 
+									if (mSPlane[wall].holes[n].vertice_s[m].z < mSPlane[wall].holes[n].vertice_s[(m + 2) % 4].z)
 									{ //bot
 										if (mSPlane[wall].holes[n].vertice_s[m].z > mSPlane[wall].holes[n].vertice_s[(m + 1) % 4].z)
 										{
@@ -4123,7 +4166,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 										cout << "bottom: " << mSPlane[wall].holes[n].vertice_s[m] << " , " << mSPlane[wall].holes[n].vertice_s[(m + 1) % 4] << endl;
 #endif
 									}
-									else 
+									else
 									{//up
 										if (mSPlane[wall].holes[n].vertice_s[m].z < mSPlane[wall].holes[n].vertice_s[(m + 1) % 4].z)
 										{
@@ -4138,9 +4181,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 									}
 								}
-								else     
+								else
 								{ //z
-									if (mSPlane[wall].holes[n].vertice_s[m].x < mSPlane[wall].holes[n].vertice_s[(m + 2) % 4].x) 
+									if (mSPlane[wall].holes[n].vertice_s[m].x < mSPlane[wall].holes[n].vertice_s[(m + 2) % 4].x)
 									{ //left
 										if (mSPlane[wall].holes[n].vertice_s[m].x > mSPlane[wall].holes[n].vertice_s[(m + 1) % 4].x)
 										{
@@ -4154,7 +4197,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 										cout << "left: " << mSPlane[wall].holes[n].vertice_s[m] << " , " << mSPlane[wall].holes[n].vertice_s[(m + 1) % 4] << endl;
 #endif
 									}
-									else 
+									else
 									{//right
 										if (mSPlane[wall].holes[n].vertice_s[m].x < mSPlane[wall].holes[n].vertice_s[(m + 1) % 4].x)
 										{
@@ -4171,7 +4214,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 							}
 						}
 					}
-					else 
+					else
 					{// wall // yoz
 						for (int n = 0; n < mSPlane[wall].holes.size(); n++)
 						{
@@ -4220,7 +4263,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 										}
 #ifdef Debug_Hols_P
 										cout << "up: " << mSPlane[wall].holes[n].vertice_s[m] << " , " << mSPlane[wall].holes[n].vertice_s[(m + 1) % 4] << endl;
-#endif								
+#endif
 									}
 								}
 								else
@@ -4275,7 +4318,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		holes_sq[wall].resize(mSPlane[wall].holes.size());
 		holes_sq1[wall].resize(mSPlane[wall].holes.size());
 		for (int n = 0; n < mSPlane[wall].holes.size(); n++)
-		{	
+		{
 			if (mSPlane[wall].holes[n].vertice_s.size() != 4)
 				continue;
 			holes_sq[wall][n].id = mSPlane2[wall].holes[n].id;
@@ -4302,8 +4345,8 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 #ifdef DBRT
 			mSPlane2[wall].holes[n].vertice = MathOperation::plane_rot(b_mat_to_y, mSPlane[wall].holes[n].vertice);
-			mSPlane2[wall].holes[n].vertice_s = MathOperation::plane_rot(b_mat_to_y, mSPlane[wall].holes[n].vertice_s);		
-			
+			mSPlane2[wall].holes[n].vertice_s = MathOperation::plane_rot(b_mat_to_y, mSPlane[wall].holes[n].vertice_s);
+
 
 			holes_sq[wall][n].vertice = mSPlane2[wall].holes[n].vertice_s;
 			holes_sq1[wall][n].vertice = holes_sq[wall][n].vertice;
@@ -4312,7 +4355,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			holes_sq1[wall][n].vertice = holes_sq[wall][n].vertice
 #endif
 
-			
+
 #ifdef Debug_MHS
 			cout << "holes_sq[wall].size(): " << holes_sq[wall].size() << " holes_projected[wall].size(): " << holes_projected[wall].size() << endl;
 			cout << "squared holes rotate back, wall:" << wall << " holes:" << n << " holes_sq[wall][n].vertice:\n" << holes_sq[wall][n].vertice << endl;
@@ -4490,8 +4533,8 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		cout <<"RoomSquaredContour["<<i<<"]:"<< RoomSquaredContourFloat[i]<<"  "<<temp<<endl;
 #endif
 	}
-	//(x1 - x3)*(y2 - y3) - 
-	//(y1 - y3)*(x2 - x3)	
+	//(x1 - x3)*(y2 - y3) -
+	//(y1 - y3)*(x2 - x3)
 	int da = 0;
 	int dm = 0;
 	for (int k = 0; k < RoomSquaredContour.size() - 2; k++)
@@ -4500,11 +4543,11 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		if (k == 0) first_adj = true;
 		if (abs(RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x) > abs(RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y))
 		{
-			if (RoomSquaredContour[k].x < RoomSquaredContour[(k + 1) % rdd].x) 
-			{ //u		
+			if (RoomSquaredContour[k].x < RoomSquaredContour[(k + 1) % rdd].x)
+			{ //u
 				int re = (RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x) % 5;
 				if (re != 0) {
-					if (RoomSquaredContour[(k + 1) % rdd].y < RoomSquaredContour[(k + 2) % rdd].y) 
+					if (RoomSquaredContour[(k + 1) % rdd].y < RoomSquaredContour[(k + 2) % rdd].y)
 					{
 #ifdef Debug_05
 						cout << "k:" << k  <<" "<< RoomSquaredContour[k]  <<" UU  x+" << (5 - re) << " " << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x  << endl;
@@ -4513,7 +4556,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 						{
 							if ((5 - re) == 4) { da = dm = 2; }
 							if ((5 - re) == 3) { da = 2; dm = 1; }
-							if ((5 - re) == 2) { da = 1; dm = 1; }								
+							if ((5 - re) == 2) { da = 1; dm = 1; }
 							RoomSquaredContour[(k + 1) % rdd].x += da;
 							RoomSquaredContour[(k + 2) % rdd].x += da;
 							RoomSquaredContour[k].x -= dm;
@@ -4600,7 +4643,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			}
 		}
 		else {
-			if (RoomSquaredContour[k].y < RoomSquaredContour[(k + 1) % rdd].y) 
+			if (RoomSquaredContour[k].y < RoomSquaredContour[(k + 1) % rdd].y)
 			{//l
 				int re = (RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y) % 5;
 				if (re != 0) {
@@ -4655,7 +4698,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 					if (RoomSquaredContour[(k + 1) % rdd].x < RoomSquaredContour[(k + 2) % rdd].x) {
 #ifdef Debug_05
 						cout << "k:" << k << " " << RoomSquaredContour[k] << " RR  y+" << (5 - re) << " " << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y  << endl;
-#endif	
+#endif
 						if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].x < RoomSquaredContour[rdd - 1].x))
 						{
 							if ((5 - re) == 4) { da = dm = 2; }
@@ -4676,7 +4719,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 						cout << "k:" << k << " " << RoomSquaredContour[k] << " RL  y-" << re << " " << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y  << endl;
 #endif
 						if (first_adj && (re != 1) && (RoomSquaredContour[k].x > RoomSquaredContour[rdd - 1].x))
-						{	
+						{
 							if (re == 4) { da = dm = 2; }
 							if (re == 3) { da = 2; dm = 1; }
 							if (re == 2) { da = 1; dm = 1; }
@@ -4707,7 +4750,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		{
 			cout << RoomSquaredContour[k];
 			if (RoomSquaredContour[k].x < RoomSquaredContour[(k + 1) % rdd].x)
-			{ 
+			{
 				int len = RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x;
 				cout << "k: " << k << " U " << len << " " << len % 5 << endl;
 			}
