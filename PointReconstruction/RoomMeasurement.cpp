@@ -3922,7 +3922,8 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		if (pts0.size() != CuboidUpdatedContourSquared.size())
 		{
 			std::cout << "##### ==>  SQUARE_BY_CONVEXITY  pts0.size() != CuboidUpdatedContourSquared.size()" << endl;
-			for (int k = 0; k < pts.size(); k++)
+			const int fallback_size = static_cast<int>(pts0.size());
+			for (int k = 0; k < fallback_size; k++)
 			{
 				cv::Point2f pt_s, tmep;
 				pt_s.x = pts0[k].x;
@@ -3935,6 +3936,10 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 				cv::Point3f tmep3;
 				tmep3.x = tmep3.y = tmep3.z = 0;
 				ConvexityContourSquaredJson3d.push_back(std::make_pair(pts0[k], tmep3));
+
+				// Fallback: keep contour_squared1 non-empty so downstream wall/plane mapping
+				// does not receive an empty RoomContour.
+				contour_squared1.push_back(std::make_pair(pts0[k], tmep3));
 			}
 		}
 		else {
@@ -4521,7 +4526,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 	RoomSquaredContourFloat = MathOperation::plane_rot(Brotation_matrix, RoomSquaredContourFloat);
 	//IOData::SavePoint3fData("RoomSquaredContourRotate.txt", RoomSquaredContour);
 
-	int rdd = RoomSquaredContourFloat.size();
+	int rdd = static_cast<int>(RoomSquaredContourFloat.size());
 	for (int i = 0; i < RoomSquaredContourFloat.size(); i++)
 	{
 		cv::Point3i temp;
@@ -4537,210 +4542,215 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 	//(y1 - y3)*(x2 - x3)
 	int da = 0;
 	int dm = 0;
-	for (int k = 0; k < RoomSquaredContour.size() - 2; k++)
-	{
-		bool first_adj = false;
-		if (k == 0) first_adj = true;
-		if (abs(RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x) > abs(RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y))
+	if (rdd >= 3) {
+		for (int k = 0; k < rdd - 2; k++)
 		{
-			if (RoomSquaredContour[k].x < RoomSquaredContour[(k + 1) % rdd].x)
-			{ //u
-				int re = (RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x) % 5;
-				if (re != 0) {
-					if (RoomSquaredContour[(k + 1) % rdd].y < RoomSquaredContour[(k + 2) % rdd].y)
-					{
-#ifdef Debug_05
-						cout << "k:" << k  <<" "<< RoomSquaredContour[k]  <<" UU  x+" << (5 - re) << " " << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x  << endl;
-#endif
-						if (first_adj && ((5 - re) != 1) &&(RoomSquaredContour[k].y < RoomSquaredContour[rdd - 1].y))
+			bool first_adj = false;
+			if (k == 0) first_adj = true;
+			if (abs(RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x) > abs(RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y))
+			{
+				if (RoomSquaredContour[k].x < RoomSquaredContour[(k + 1) % rdd].x)
+				{ //u
+					int re = (RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x) % 5;
+					if (re != 0) {
+						if (RoomSquaredContour[(k + 1) % rdd].y < RoomSquaredContour[(k + 2) % rdd].y)
 						{
-							if ((5 - re) == 4) { da = dm = 2; }
-							if ((5 - re) == 3) { da = 2; dm = 1; }
-							if ((5 - re) == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].x += da;
-							RoomSquaredContour[(k + 2) % rdd].x += da;
-							RoomSquaredContour[k].x -= dm;
-							RoomSquaredContour[rdd - 1].x -= dm;
+#ifdef Debug_05
+							cout << "k:" << k  <<" "<< RoomSquaredContour[k]  <<" UU  x+" << (5 - re) << " " << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x  << endl;
+#endif
+							if (first_adj && ((5 - re) != 1) &&(RoomSquaredContour[k].y < RoomSquaredContour[rdd - 1].y))
+							{
+								if ((5 - re) == 4) { da = dm = 2; }
+								if ((5 - re) == 3) { da = 2; dm = 1; }
+								if ((5 - re) == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].x += da;
+								RoomSquaredContour[(k + 2) % rdd].x += da;
+								RoomSquaredContour[k].x -= dm;
+								RoomSquaredContour[rdd - 1].x -= dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].x += (5 - re);
+								RoomSquaredContour[(k + 2) % rdd].x += (5 - re);
+							}
 						}
 						else {
-							RoomSquaredContour[(k + 1) % rdd].x += (5 - re);
-							RoomSquaredContour[(k + 2) % rdd].x += (5 - re);
+#ifdef Debug_05
+							cout << "k:" << k << " " << RoomSquaredContour[k] << " UD  x-" << re << " " << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x << endl;
+#endif
+							if (first_adj && (re != 1) && (RoomSquaredContour[k].y > RoomSquaredContour[rdd - 1].y))
+							{
+								if (re == 4) { da = dm = 2; }
+								if (re == 3) { da = 2; dm = 1; }
+								if (re == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].x -= da;
+								RoomSquaredContour[(k + 2) % rdd].x -= da;
+								RoomSquaredContour[k].x += dm;
+								RoomSquaredContour[rdd - 1].x += dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].x -= re;
+								RoomSquaredContour[(k + 2) % rdd].x -= re;
+							}
 						}
 					}
 					else {
 #ifdef Debug_05
-						cout << "k:" << k << " " << RoomSquaredContour[k] << " UD  x-" << re << " " << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x << endl;
+						cout << "k:" << k << " " << RoomSquaredContour[k] << " :" << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x << endl;
 #endif
-						if (first_adj && (re != 1) && (RoomSquaredContour[k].y > RoomSquaredContour[rdd - 1].y))
-						{
-							if (re == 4) { da = dm = 2; }
-							if (re == 3) { da = 2; dm = 1; }
-							if (re == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].x -= da;
-							RoomSquaredContour[(k + 2) % rdd].x -= da;
-							RoomSquaredContour[k].x += dm;
-							RoomSquaredContour[rdd - 1].x += dm;
-						}
-						else {
-							RoomSquaredContour[(k + 1) % rdd].x -= re;
-							RoomSquaredContour[(k + 2) % rdd].x -= re;
-						}
 					}
 				}
 				else {
+					int re = (RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x) % 5;
+					if (re != 0) {
+						if (RoomSquaredContour[(k + 1) % rdd].y < RoomSquaredContour[(k + 2) % rdd].y) {
 #ifdef Debug_05
-					cout << "k:" << k << " " << RoomSquaredContour[k] << " :" << RoomSquaredContour[(k + 1) % rdd].x - RoomSquaredContour[k].x << endl;
+							cout <<"k:" << k << " " << RoomSquaredContour[k] << " DU  x-" << re << " " << RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x << endl;
 #endif
+							if (first_adj && (re != 1) && (RoomSquaredContour[k].y < RoomSquaredContour[rdd - 1].y))
+							{
+								if (re == 4) { da = dm = 2; }
+								if (re == 3) { da = 2; dm = 1; }
+								if (re == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].x += da;
+								RoomSquaredContour[(k + 2) % rdd].x += da;
+								RoomSquaredContour[k].x -= dm;
+								RoomSquaredContour[rdd - 1].x -= dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].x += re;
+								RoomSquaredContour[(k + 2) % rdd].x += re;
+							}
+						}
+						else {
+#ifdef Debug_05
+							cout <<"k:" << k << " " << RoomSquaredContour[k] << " DD  x+" << (5 - re) << " " << RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x  << endl;
+#endif
+							if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].y > RoomSquaredContour[rdd - 1].y))
+							{
+								if ((5 - re) == 4) { da = dm = 2; }
+								if ((5 - re) == 3) { da = 2; dm = 1; }
+								if ((5 - re) == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].x -= da;
+								RoomSquaredContour[(k + 2) % rdd].x -= da;
+								RoomSquaredContour[k].x += dm;
+								RoomSquaredContour[rdd - 1].x += dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].x -= (5 - re);
+								RoomSquaredContour[(k + 2) % rdd].x -= (5 - re);
+							}
+						}
+					}
+					else {
+#ifdef Debug_05
+						cout << "k:" << k << " " << RoomSquaredContour[k] << ":" << RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x << endl;
+#endif
+					}
 				}
 			}
-			else {//d
-				int re = (RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x) % 5;
-				if (re != 0) {
-					if (RoomSquaredContour[(k + 1) % rdd].y < RoomSquaredContour[(k + 2) % rdd].y) {
+			else {
+				if (RoomSquaredContour[k].y < RoomSquaredContour[(k + 1) % rdd].y)
+				{//l
+					int re = (RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y) % 5;
+					if (re != 0) {
+						if (RoomSquaredContour[(k + 1) % rdd].x < RoomSquaredContour[(k + 2) % rdd].x) {
 #ifdef Debug_05
-						cout <<"k:" << k << " " << RoomSquaredContour[k] << " DU  x-" << re << " " << RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x << endl;
+							cout << "k:" << k << " " << RoomSquaredContour[k] << " LR  y-" << re << " " << RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y << endl;
 #endif
-						if (first_adj && (re != 1) && (RoomSquaredContour[k].y < RoomSquaredContour[rdd - 1].y))
-						{
-							if (re == 4) { da = dm = 2; }
-							if (re == 3) { da = 2; dm = 1; }
-							if (re == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].x += da;
-							RoomSquaredContour[(k + 2) % rdd].x += da;
-							RoomSquaredContour[k].x -= dm;
-							RoomSquaredContour[rdd - 1].x -= dm;
+							if (first_adj && (re != 1) && (RoomSquaredContour[k].x < RoomSquaredContour[rdd - 1].x))
+							{
+								if (re == 4) { da = dm = 2; }
+								if (re == 3) { da = 2; dm = 1; }
+								if (re == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].y -= da;
+								RoomSquaredContour[(k + 2) % rdd].y -= da;
+								RoomSquaredContour[k].y += dm;
+								RoomSquaredContour[rdd - 1].y += dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].y -= re;
+								RoomSquaredContour[(k + 2) % rdd].y -= re;
+							}
 						}
 						else {
-							RoomSquaredContour[(k + 1) % rdd].x += re;
-							RoomSquaredContour[(k + 2) % rdd].x += re;
+#ifdef Debug_05
+							cout << "k:" << k << " " << RoomSquaredContour[k] << " LL  y+" << (5 - re) << " " << RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y  << endl;
+#endif
+							if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].x > RoomSquaredContour[rdd - 1].x))
+							{
+								if ((5 - re) == 4) { da = dm = 2; }
+								if ((5 - re) == 3) { da = 2; dm = 1; }
+								if ((5 - re) == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].y += da;
+								RoomSquaredContour[(k + 2) % rdd].y += da;
+								RoomSquaredContour[k].y -= dm;
+								RoomSquaredContour[rdd - 1].y -= dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].y += (5 - re);
+								RoomSquaredContour[(k + 2) % rdd].y += (5 - re);
+							}
 						}
 					}
 					else {
 #ifdef Debug_05
-						cout <<"k:" << k << " " << RoomSquaredContour[k] << " DD  x+" << (5 - re) << " " << RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x  << endl;
+						cout << "k:" << k << " " << RoomSquaredContour[k] << " :" << RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y << endl;
 #endif
-						if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].y > RoomSquaredContour[rdd - 1].y))
-						{
-							if ((5 - re) == 4) { da = dm = 2; }
-							if ((5 - re) == 3) { da = 2; dm = 1; }
-							if ((5 - re) == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].x -= da;
-							RoomSquaredContour[(k + 2) % rdd].x -= da;
-							RoomSquaredContour[k].x += dm;
-							RoomSquaredContour[rdd - 1].x += dm;
-						}
-						else {
-							RoomSquaredContour[(k + 1) % rdd].x -= (5 - re);
-							RoomSquaredContour[(k + 2) % rdd].x -= (5 - re);
-						}
 					}
 				}
-				else {
+				else {//r
+					int re = (RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y) % 5;
+					if (re != 0) {
+						if (RoomSquaredContour[(k + 1) % rdd].x < RoomSquaredContour[(k + 2) % rdd].x) {
 #ifdef Debug_05
-					cout << "k:" << k << " " << RoomSquaredContour[k] << ":" << RoomSquaredContour[k].x - RoomSquaredContour[(k + 1) % rdd].x << endl;
+							cout << "k:" << k << " " << RoomSquaredContour[k] << " RR  y+" << (5 - re) << " " << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y  << endl;
 #endif
+							if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].x < RoomSquaredContour[rdd - 1].x))
+							{
+								if ((5 - re) == 4) { da = dm = 2; }
+								if ((5 - re) == 3) { da = 2; dm = 1; }
+								if ((5 - re) == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].y -= da;
+								RoomSquaredContour[(k + 2) % rdd].y -= da;
+								RoomSquaredContour[k].y += dm;
+								RoomSquaredContour[rdd - 1].y += dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].y -= (5 - re);
+								RoomSquaredContour[(k + 2) % rdd].y -= (5 - re);
+							}
+						}
+						else {
+#ifdef Debug_05
+							cout << "k:" << k << " " << RoomSquaredContour[k] << " RL  y-" << re << " " << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y  << endl;
+#endif
+							if (first_adj && (re != 1) && (RoomSquaredContour[k].x > RoomSquaredContour[rdd - 1].x))
+							{
+								if (re == 4) { da = dm = 2; }
+								if (re == 3) { da = 2; dm = 1; }
+								if (re == 2) { da = 1; dm = 1; }
+								RoomSquaredContour[(k + 1) % rdd].y += da;
+								RoomSquaredContour[(k + 2) % rdd].y += da;
+								RoomSquaredContour[k].y -= dm;
+								RoomSquaredContour[rdd - 1].y -= dm;
+							}
+							else {
+								RoomSquaredContour[(k + 1) % rdd].y += re;
+								RoomSquaredContour[(k + 2) % rdd].y += re;
+							}
+						}
+					}
+					else {
+#ifdef Debug_05
+						cout << "k:" << k << " " << RoomSquaredContour[k] << " :" << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y << endl;
+#endif
+					}
 				}
 			}
 		}
-		else {
-			if (RoomSquaredContour[k].y < RoomSquaredContour[(k + 1) % rdd].y)
-			{//l
-				int re = (RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y) % 5;
-				if (re != 0) {
-					if (RoomSquaredContour[(k + 1) % rdd].x < RoomSquaredContour[(k + 2) % rdd].x) {
-#ifdef Debug_05
-						cout << "k:" << k << " " << RoomSquaredContour[k] << " LR  y-" << re << " " << RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y << endl;
-#endif
-						if (first_adj && (re != 1) && (RoomSquaredContour[k].x < RoomSquaredContour[rdd - 1].x))
-						{
-							if (re == 4) { da = dm = 2; }
-							if (re == 3) { da = 2; dm = 1; }
-							if (re == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].y -= da;
-							RoomSquaredContour[(k + 2) % rdd].y -= da;
-							RoomSquaredContour[k].y += dm;
-							RoomSquaredContour[rdd - 1].y += dm;
-						}
-						else {
-							RoomSquaredContour[(k + 1) % rdd].y -= re;
-							RoomSquaredContour[(k + 2) % rdd].y -= re;
-						}
-					}
-					else {
-#ifdef Debug_05
-						cout << "k:" << k << " " << RoomSquaredContour[k] << " LL  y+" << (5 - re) << " " << RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y  << endl;
-#endif
-						if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].x > RoomSquaredContour[rdd - 1].x))
-						{
-							if ((5 - re) == 4) { da = dm = 2; }
-							if ((5 - re) == 3) { da = 2; dm = 1; }
-							if ((5 - re) == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].y += da;
-							RoomSquaredContour[(k + 2) % rdd].y += da;
-							RoomSquaredContour[k].y -= dm;
-							RoomSquaredContour[rdd - 1].y -= dm;
-						}
-						else {
-							RoomSquaredContour[(k + 1) % rdd].y += (5 - re);
-							RoomSquaredContour[(k + 2) % rdd].y += (5 - re);
-						}
-					}
-				}
-				else {
-#ifdef Debug_05
-					cout << "k:" << k << " " << RoomSquaredContour[k] << " :" << RoomSquaredContour[(k + 1) % rdd].y - RoomSquaredContour[k].y << endl;
-#endif
-				}
-			}
-			else {//r
-				int re = (RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y) % 5;
-				if (re != 0) {
-					if (RoomSquaredContour[(k + 1) % rdd].x < RoomSquaredContour[(k + 2) % rdd].x) {
-#ifdef Debug_05
-						cout << "k:" << k << " " << RoomSquaredContour[k] << " RR  y+" << (5 - re) << " " << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y  << endl;
-#endif
-						if (first_adj && ((5 - re) != 1) && (RoomSquaredContour[k].x < RoomSquaredContour[rdd - 1].x))
-						{
-							if ((5 - re) == 4) { da = dm = 2; }
-							if ((5 - re) == 3) { da = 2; dm = 1; }
-							if ((5 - re) == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].y -= da;
-							RoomSquaredContour[(k + 2) % rdd].y -= da;
-							RoomSquaredContour[k].y += dm;
-							RoomSquaredContour[rdd - 1].y += dm;
-						}
-						else {
-							RoomSquaredContour[(k + 1) % rdd].y -= (5 - re);
-							RoomSquaredContour[(k + 2) % rdd].y -= (5 - re);
-						}
-					}
-					else {
-#ifdef Debug_05
-						cout << "k:" << k << " " << RoomSquaredContour[k] << " RL  y-" << re << " " << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y  << endl;
-#endif
-						if (first_adj && (re != 1) && (RoomSquaredContour[k].x > RoomSquaredContour[rdd - 1].x))
-						{
-							if (re == 4) { da = dm = 2; }
-							if (re == 3) { da = 2; dm = 1; }
-							if (re == 2) { da = 1; dm = 1; }
-							RoomSquaredContour[(k + 1) % rdd].y += da;
-							RoomSquaredContour[(k + 2) % rdd].y += da;
-							RoomSquaredContour[k].y -= dm;
-							RoomSquaredContour[rdd - 1].y -= dm;
-						}
-						else {
-							RoomSquaredContour[(k + 1) % rdd].y += re;
-							RoomSquaredContour[(k + 2) % rdd].y += re;
-						}
-					}
-				}
-				else {
-#ifdef Debug_05
-					cout << "k:" << k << " " << RoomSquaredContour[k] << " :" << RoomSquaredContour[k].y - RoomSquaredContour[(k + 1) % rdd].y << endl;
-#endif
-				}
-			}
-		}
+	}
+	else {
+		std::cout << "[SquareMode] skip 5-grid snapping: RoomSquaredContour vertex count is " << rdd << std::endl;
 	}
 
 #if 0//def Debug_05
@@ -4784,11 +4794,14 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 	contour_squared05 =  MathOperation::plane_rot(b_mat_to_y, RoomSquaredContourFloat);
 #if 1 //def Debug_05
-	for (int i = 0; i < contour_squared05.size(); i++) {
-		contour_squared05_len.push_back(sqrt(std::pow(contour_squared05[i].x - contour_squared05[(i + 1) % contour_squared05.size()].x, 2.0) +
-			std::pow(contour_squared05[i].y - contour_squared05[(i + 1) % contour_squared05.size()].y, 2.0)));
-		std::cout << "i: " << i << " len:" << sqrt(std::pow(contour_squared05[i].x - contour_squared05[(i + 1) % contour_squared05.size()].x, 2.0) +
-			                                   std::pow(contour_squared05[i].y - contour_squared05[(i + 1) % contour_squared05.size()].y, 2.0)) << endl;
+	if (!contour_squared05.empty()) {
+		const int contour_squared05_size = static_cast<int>(contour_squared05.size());
+		for (int i = 0; i < contour_squared05_size; i++) {
+			contour_squared05_len.push_back(sqrt(std::pow(contour_squared05[i].x - contour_squared05[(i + 1) % contour_squared05_size].x, 2.0) +
+				std::pow(contour_squared05[i].y - contour_squared05[(i + 1) % contour_squared05_size].y, 2.0)));
+			std::cout << "i: " << i << " len:" << sqrt(std::pow(contour_squared05[i].x - contour_squared05[(i + 1) % contour_squared05_size].x, 2.0) +
+				                                   std::pow(contour_squared05[i].y - contour_squared05[(i + 1) % contour_squared05_size].y, 2.0)) << endl;
+		}
 	}
 #endif
 #endif
