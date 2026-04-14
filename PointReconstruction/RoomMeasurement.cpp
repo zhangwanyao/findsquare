@@ -3923,11 +3923,14 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 		{
 			std::cout << "##### ==>  SQUARE_BY_CONVEXITY  pts0.size() != CuboidUpdatedContourSquared.size()" << endl;
 			const int fallback_size = static_cast<int>(pts0.size());
+
+			std::vector<cv::Point3f> pts0_back = MathOperation::plane_rot(b_mat_to_y, pts0);
+
 			for (int k = 0; k < fallback_size; k++)
 			{
 				cv::Point2f pt_s, tmep;
-				pt_s.x = pts0[k].x;
-				pt_s.y = pts0[k].y;
+				pt_s.x = pts0_back[k].x;
+				pt_s.y = pts0_back[k].y;
 				tmep.x = 0;
 				tmep.y = 0;
 				ConvexityContourSquaredJson.push_back(std::make_pair(pt_s, tmep));
@@ -3935,11 +3938,11 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 
 				cv::Point3f tmep3;
 				tmep3.x = tmep3.y = tmep3.z = 0;
-				ConvexityContourSquaredJson3d.push_back(std::make_pair(pts0[k], tmep3));
+        ConvexityContourSquaredJson3d.push_back(std::make_pair(pts0_back[k], tmep3));
 
 				// Fallback: keep contour_squared1 non-empty so downstream wall/plane mapping
 				// does not receive an empty RoomContour.
-				contour_squared1.push_back(std::make_pair(pts0[k], tmep3));
+				contour_squared1.push_back(std::make_pair(pts0_back[k], tmep3));
 			}
 		}
 		else {
