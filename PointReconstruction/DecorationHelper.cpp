@@ -811,8 +811,13 @@ bool DecorationHelper::StartMeasurement(int room_squareness_mode, std::string ax
 		if (WallList[i] == -1) {
 			continue;
 		}
-		if (Planes[WallList[i]].vertices.size() > 0){
-			int rd = RoomContour.size();
+		if (Planes[WallList[i]].vertices.size() >= 4){
+			const int rd = static_cast<int>(RoomContour.size());
+			if (rd <= 0 || i >= rd) {
+				std::cout << "[SquareMode] skip squared wall vertices update: RoomContour.size()="
+					<< rd << ", wall index=" << i << std::endl;
+				continue;
+			}
 			Planes[WallList[i]].vertices[0].x = Planes[WallList[i]].vertices[3].x= RoomContour[i].x;
 			Planes[WallList[i]].vertices[0].y = Planes[WallList[i]].vertices[3].y= RoomContour[i].y;
 			Planes[WallList[i]].vertices[1].x = Planes[WallList[i]].vertices[2].x= RoomContour[(i + 1) % rd].x;
@@ -846,8 +851,13 @@ bool DecorationHelper::StartMeasurement(int room_squareness_mode, std::string ax
 		if (WallList[i] == -1) {
 			continue;
 		}
-		if (Planes[WallList[i]].vertices.size() > 0){
-			int rd = RoomContour.size();
+		if (Planes[WallList[i]].vertices.size() >= 4){
+			const int rd = static_cast<int>(RoomContour.size());
+			if (rd <= 0 || i >= rd) {
+				std::cout << "[SquareMode] skip squared(min) wall vertices update: RoomContour.size()="
+					<< rd << ", wall index=" << i << std::endl;
+				continue;
+			}
 			Planes[WallList[i]].vertices[0].x = Planes[WallList[i]].vertices[3].x = RoomContour[i].x;
 			Planes[WallList[i]].vertices[0].y = Planes[WallList[i]].vertices[3].y = RoomContour[i].y;
 			Planes[WallList[i]].vertices[1].x = Planes[WallList[i]].vertices[2].x = RoomContour[(i + 1) % rd].x;
@@ -872,8 +882,13 @@ bool DecorationHelper::StartMeasurement(int room_squareness_mode, std::string ax
 		if (WallList[i] == -1) {
 			continue;
 		}
-		if (Planes[WallList[i]].vertices.size() > 0) {
-			int rd = RoomContour.size();
+		if (Planes[WallList[i]].vertices.size() >= 4) {
+			const int rd = static_cast<int>(RoomContour.size());
+			if (rd <= 0 || i >= rd) {
+				std::cout << "[SquareMode] skip squared(0.5) wall vertices update: RoomContour.size()="
+					<< rd << ", wall index=" << i << std::endl;
+				continue;
+			}
 			Planes[WallList[i]].vertices[0].x = Planes[WallList[i]].vertices[3].x = RoomContour[i].x;
 			Planes[WallList[i]].vertices[0].y = Planes[WallList[i]].vertices[3].y = RoomContour[i].y;
 			Planes[WallList[i]].vertices[1].x = Planes[WallList[i]].vertices[2].x = RoomContour[(i + 1) % rd].x;
