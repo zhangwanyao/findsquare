@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="250">
+<rect width="100%" height="100%" fill="#14161c"/>
+<text x="16" y="26" fill="#9fe870" font-family="monospace" font-size="16">[Branches]</text>
+<text x="16" y="48" fill="#dceaff" font-family="monospace" font-size="16">* work 967bd00 Make room-squaring more robust with bounds checks, fallback contour handling, and safer integer usage</text>
+<text x="16" y="70" fill="#dceaff" font-family="monospace" font-size="16"></text>
+<text x="16" y="92" fill="#9fe870" font-family="monospace" font-size="16">[Commit Graph --all]</text>
+<text x="16" y="114" fill="#dceaff" font-family="monospace" font-size="16">* 967bd00 (HEAD -&gt; work) Make room-squaring more robust with bounds checks, fallback contour handling, and safer integer usage</text>
+<text x="16" y="136" fill="#dceaff" font-family="monospace" font-size="16">*   f11ebb2 Merge pull request #1 from zhangwanyao/codex/print-std-cout-logs-for-validation-errors</text>
+<text x="16" y="158" fill="#dceaff" font-family="monospace" font-size="16">|\  </text>
+<text x="16" y="180" fill="#dceaff" font-family="monospace" font-size="16">| * de50eef Document 4-&gt;2 square mode design and add legacy mapping logs</text>
+<text x="16" y="202" fill="#dceaff" font-family="monospace" font-size="16">|/  </text>
+<text x="16" y="224" fill="#dceaff" font-family="monospace" font-size="16">* 33f3223 Initial commit</text>
+</svg>

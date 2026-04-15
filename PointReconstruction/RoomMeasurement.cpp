@@ -1282,7 +1282,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 	eRoomSquare_type type = SQUARE_BY_CONVEXITY;
 	const int square_mode_raw = GetSquareMode();
 	const int square_strategy_mode = GetSquareStrategyMode();
-	if (square_strategy_mode == SQUARE_STRATEGY_FIT_MAX_AREA) {
+	const bool fit_max_area_free_mode = (square_strategy_mode == SQUARE_STRATEGY_FIT_MAX_AREA_FREE);
+	if (square_strategy_mode == SQUARE_STRATEGY_FIT_MAX_AREA ||
+		square_strategy_mode == SQUARE_STRATEGY_FIT_MAX_AREA_FREE) {
 		type = SQUARE_BY_MIN_LOSS;
 	}
 	else {
@@ -2057,7 +2059,19 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 #endif
 		int minIdx = 0;
 		float minLAera = INFINITY;
-		if (type == SQUARE_BY_MIN_LOSS) {
+		if (fit_max_area_free_mode) {
+			// 无正交约束模式：直接使用当前轮廓，不进入 ContourSquare 正交化流程。
+			// 这样相邻边不被强制调成垂直，保持原始点云轮廓形态。
+			std::vector<cv::Point2f > PtsForRoomSquaredTemp;
+			for (int i = 0; i < pts0.size(); i++) {
+				PtsForRoomSquaredTemp.push_back(cv::Point2f(pts0[i].x, pts0[i].y));
+			}
+			PtsForRoomSquared.push_back(PtsForRoomSquaredTemp);
+			minLAera = 0.0f;
+			minIdx = 0;
+			log_info("[ContourSquare]:fit-max-area-free mode, skip orthogonalization and keep original contour");
+		}
+		else if (type == SQUARE_BY_MIN_LOSS) {
 			std::vector <float> LAeraS;
 			int tempId=0;
 			for (int p = 0; p < pts0.size(); p++)
@@ -3924,6 +3938,7 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 			std::cout << "##### ==>  SQUARE_BY_CONVEXITY  pts0.size() != CuboidUpdatedContourSquared.size()" << endl;
 			const int fallback_size = static_cast<int>(pts0.size());
 
+
 			std::vector<cv::Point3f> pts0_back = MathOperation::plane_rot(b_mat_to_y, pts0);
 
 			for (int k = 0; k < fallback_size; k++)
@@ -3938,7 +3953,9 @@ std::vector<std::pair<cv::Point3f, cv::Point3f>> RoomMeasurement::MakeRoomSquare
 
 				cv::Point3f tmep3;
 				tmep3.x = tmep3.y = tmep3.z = 0;
+
         ConvexityContourSquaredJson3d.push_back(std::make_pair(pts0_back[k], tmep3));
+
 
 				// Fallback: keep contour_squared1 non-empty so downstream wall/plane mapping
 				// does not receive an empty RoomContour.

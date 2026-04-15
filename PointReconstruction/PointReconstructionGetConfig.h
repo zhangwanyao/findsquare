@@ -18,6 +18,7 @@ typedef enum eSquareStrategyMode_t
 {
     SQUARE_STRATEGY_REGULARIZED = 0,   // 正则化找方：轴线优先，否则参考墙
     SQUARE_STRATEGY_FIT_MAX_AREA = 1,  // 非正则：尽量贴合墙面并最大化面积
+    SQUARE_STRATEGY_FIT_MAX_AREA_FREE = 2, // 无正交约束：保持原多边形形态（仅做坐标/流程对齐）
 }eSquareStrategyMode;
 
 std::string GetMeshOpeningPath();
@@ -55,4 +56,3 @@ std::vector<IntPoint2D> GetPolypt_uv();
 std::vector<FloatPoint2D> GetPolypt_xy();
 
 std::string GetAxisEqnConfig();
-
