@@ -394,8 +394,12 @@ int GetSquareStrategyMode()
 	// New 2-mode mapping with backward compatibility
 	// 0: regularized square
 	// 1: fit-max-area square
+	// 4: fit-max-area without orthogonal constraint
 	// legacy 2(convexity) -> regularized
 	// legacy 3(min-loss) -> fit-max-area
+	if (g_square_mode == 4) {
+		return SQUARE_STRATEGY_FIT_MAX_AREA_FREE;
+	}
 	if (g_square_mode == 1 || g_square_mode == 3) {
 		return SQUARE_STRATEGY_FIT_MAX_AREA;
 	}

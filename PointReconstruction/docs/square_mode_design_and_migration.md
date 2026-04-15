@@ -21,10 +21,11 @@
 2. **贴合优先/面积优先（Fit-Max-Area）**  
    更强调贴合原始墙面与损失最小。
 
-因此外部配置建议只暴露 `square_mode` 的两个值：
+因此外部配置默认暴露 `square_mode` 的两个值（也支持新增的无正交约束模式）：
 
 - `0`: `SQUARE_STRATEGY_REGULARIZED`
 - `1`: `SQUARE_STRATEGY_FIT_MAX_AREA`
+- `4`: `SQUARE_STRATEGY_FIT_MAX_AREA_FREE`（无正交约束）
 
 ## 3) 向后兼容策略
 
